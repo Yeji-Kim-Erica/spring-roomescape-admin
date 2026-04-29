@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,10 +19,17 @@ public class ReservationController {
 
     private final List<Reservation> reservations = new ArrayList<>();
     private final AtomicLong index = new AtomicLong(1);
+    private final ReservationDAO reservationDAO;
+
+    @Autowired
+    public ReservationController(ReservationDAO reservationDAO) {
+        this.reservationDAO = reservationDAO;
+    }
 
     @GetMapping("/reservations")
     @ResponseBody
     public ResponseEntity<List<Reservation>> read() {
+        List<Reservation> reservations = reservationDAO.findAllReservations();
         return ResponseEntity.ok().body(reservations);
     }
 
