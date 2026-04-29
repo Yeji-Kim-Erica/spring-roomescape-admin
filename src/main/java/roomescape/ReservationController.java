@@ -1,9 +1,6 @@
 package roomescape;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,8 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class ReservationController {
 
-    private final List<Reservation> reservations = new ArrayList<>();
-    private final AtomicLong index = new AtomicLong(1);
     private final ReservationDAO reservationDAO;
 
     @Autowired
@@ -36,20 +31,26 @@ public class ReservationController {
     @PostMapping("/reservations")
     @ResponseBody
     public ResponseEntity<Reservation> create(@RequestBody Reservation reservation) {
-        Reservation newReservation = Reservation.toEntity(reservation, index.getAndIncrement());
-        reservations.add(newReservation);
+        Long id = reservationDAO.insertWithKeyHolder(reservation);
+
+        Reservation newReservation = new Reservation(
+                id,
+                reservation.getName(),
+                reservation.getDate(),
+                reservation.getTime()
+        );
+
         return ResponseEntity.ok().body(newReservation);
     }
 
     @DeleteMapping("/reservations/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        Reservation reservation = reservations.stream()
-                .filter(it -> Objects.equals(it.getId(), id))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
+        int rowCount = reservationDAO.delete(id);
 
-        reservations.remove(reservation);
+        if (rowCount > 0) {
+            return ResponseEntity.ok().build();
+        }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.badRequest().build();
     }
 }
