@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ReservationController {
 
     private final ReservationDAO reservationDAO;
+    private final ReservationTimeDAO reservationTimeDAO;
 
     @Autowired
-    public ReservationController(ReservationDAO reservationDAO) {
+    public ReservationController(ReservationDAO reservationDAO, ReservationTimeDAO reservationTimeDAO) {
         this.reservationDAO = reservationDAO;
+        this.reservationTimeDAO = reservationTimeDAO;
     }
 
     @GetMapping("/reservations")
@@ -30,14 +32,17 @@ public class ReservationController {
 
     @PostMapping("/reservations")
     @ResponseBody
-    public ResponseEntity<Reservation> create(@RequestBody Reservation reservation) {
-        Long id = reservationDAO.insertWithKeyHolder(reservation);
+    public ResponseEntity<Reservation> create(@RequestBody ReservationRequestDto reservationRequestDto) {
+        Long id = reservationDAO.insertWithKeyHolder(reservationRequestDto);
+
+        Long timeId = reservationRequestDto.getTimeId();
+        ReservationTime reservationTime = reservationTimeDAO.findReservationTimeById(timeId);
 
         Reservation newReservation = new Reservation(
                 id,
-                reservation.getName(),
-                reservation.getDate(),
-                reservation.getTime()
+                reservationRequestDto.getName(),
+                reservationRequestDto.getDate(),
+                reservationTime
         );
 
         return ResponseEntity.ok().body(newReservation);
