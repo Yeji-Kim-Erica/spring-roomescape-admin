@@ -20,14 +20,15 @@ public class ReservationService {
     }
 
     public List<Reservation> retrieveAllReservations() {
-        return reservationDAO.findAllReservations();
+        return reservationDAO.selectAllReservations();
     }
 
     public Reservation addNewReservation(ReservationRequestDto reservationRequestDto) {
-        Long id = reservationDAO.insertWithKeyHolder(reservationRequestDto);
-
         Long timeId = reservationRequestDto.timeId();
-        ReservationTime reservationTime = reservationTimeDAO.findReservationTimeById(timeId);
+        ReservationTime reservationTime = reservationTimeDAO.selectReservationTimeById(timeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 예약 가능 시간이 존재하지 않습니다."));
+
+        Long id = reservationDAO.insertAndReturnId(reservationRequestDto);
 
         return new Reservation(
                 id,
@@ -38,7 +39,6 @@ public class ReservationService {
     }
 
     public boolean removeReservation(Long id) {
-        int rowCount = reservationDAO.delete(id);
-        return rowCount > 0;
+        return reservationDAO.deleteById(id);
     }
 }

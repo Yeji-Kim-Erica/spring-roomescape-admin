@@ -7,10 +7,10 @@ public record ReservationResponseDto(Long id, String name, LocalDate date, Reser
 
     public static ReservationResponseDto from(Reservation reservation) {
         return new ReservationResponseDto(
-                reservation.getId(),
-                reservation.getName(),
-                reservation.getDate(),
-                ReservationTimeResponseDto.from(reservation.getTime())
+                reservation.id(),
+                reservation.name(),
+                reservation.date(),
+                ReservationTimeResponseDto.from(reservation.time())
         );
     }
 }

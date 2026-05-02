@@ -7,8 +7,8 @@ public record ReservationTimeResponseDto(Long id, LocalTime startAt) {
 
     public static ReservationTimeResponseDto from(ReservationTime reservationTime) {
         return new ReservationTimeResponseDto(
-                reservationTime.getId(),
-                reservationTime.getStartAt()
+                reservationTime.id(),
+                reservationTime.startAt()
         );
     }
 }
