@@ -3,18 +3,17 @@ package roomescape.controller;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import roomescape.domain.Reservation;
 import roomescape.dto.ReservationRequestDto;
 import roomescape.service.ReservationService;
 
-@Controller
+@RestController
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -25,14 +24,12 @@ public class ReservationController {
     }
 
     @GetMapping("/reservations")
-    @ResponseBody
     public ResponseEntity<List<Reservation>> read() {
         List<Reservation> reservations = reservationService.retrieveAllReservations();
         return ResponseEntity.ok().body(reservations);
     }
 
     @PostMapping("/reservations")
-    @ResponseBody
     public ResponseEntity<Reservation> create(@RequestBody ReservationRequestDto reservationRequestDto) {
         Reservation newReservation = reservationService.addNewReservation(reservationRequestDto);
         return ResponseEntity.ok().body(newReservation);
