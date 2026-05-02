@@ -52,9 +52,9 @@ public class ReservationDAO {
             PreparedStatement ps = connection.prepareStatement(
                     sql,
                     new String[]{"id"});
-            ps.setString(1, reservationRequestDto.getName());
-            ps.setString(2, reservationRequestDto.getDate().toString());
-            ps.setLong(3, reservationRequestDto.getTimeId());
+            ps.setString(1, reservationRequestDto.name());
+            ps.setString(2, reservationRequestDto.date().toString());
+            ps.setLong(3, reservationRequestDto.timeId());
             return ps;
         }, keyHolder);
 

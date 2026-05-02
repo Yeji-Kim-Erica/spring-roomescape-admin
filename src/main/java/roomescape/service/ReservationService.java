@@ -26,13 +26,13 @@ public class ReservationService {
     public Reservation addNewReservation(ReservationRequestDto reservationRequestDto) {
         Long id = reservationDAO.insertWithKeyHolder(reservationRequestDto);
 
-        Long timeId = reservationRequestDto.getTimeId();
+        Long timeId = reservationRequestDto.timeId();
         ReservationTime reservationTime = reservationTimeDAO.findReservationTimeById(timeId);
 
         return new Reservation(
                 id,
-                reservationRequestDto.getName(),
-                reservationRequestDto.getDate(),
+                reservationRequestDto.name(),
+                reservationRequestDto.date(),
                 reservationTime
         );
     }
