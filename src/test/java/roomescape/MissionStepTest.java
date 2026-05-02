@@ -25,7 +25,6 @@ import static org.hamcrest.Matchers.is;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class MissionStepTest {
 
-    @Disabled
     @Nested
     class 미션_1단계 {
         @Test
@@ -39,14 +38,26 @@ public class MissionStepTest {
 
         @Test
         void 예약_추가_및_삭제() {
-            Map<String, String> params = new HashMap<>();
-            params.put("name", "브라운");
-            params.put("date", "2023-08-05");
-            params.put("time", "15:40");
+            // 시간 추가
+            Map<String, String> reservationTime = new HashMap<>();
+            reservationTime.put("startAt", "15:40");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .body(params)
+                    .body(reservationTime)
+                    .when().post("/times")
+                    .then().log().all()
+                    .statusCode(201);
+
+            // 예약 추가 및 삭제
+            Map<String, Object> reservation = new HashMap<>();
+            reservation.put("name", "브라운");
+            reservation.put("date", "2023-08-05");
+            reservation.put("timeId", 1);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(reservation)
                     .when().post("/reservations")
                     .then().log().all()
                     .statusCode(201)
@@ -71,7 +82,6 @@ public class MissionStepTest {
         }
     }
 
-    @Disabled
     @Nested
     class 미션_2단계 {
         @Autowired
@@ -90,7 +100,8 @@ public class MissionStepTest {
 
         @Test
         void DB_조회_API_전환() {
-            jdbcTemplate.update("INSERT INTO reservation (name, date, time) VALUES (?, ?, ?)", "브라운", "2023-08-05", "15:40");
+            jdbcTemplate.update("INSERT INTO reservation_time (start_at) VALUES (?)", "15:40");
+            jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", "2023-08-05", 1);
 
             List<Reservation> reservations = RestAssured.given().log().all()
                     .when().get("/reservations")
@@ -105,14 +116,26 @@ public class MissionStepTest {
 
         @Test
         void DB_추가_삭제_API_전환() {
-            Map<String, String> params = new HashMap<>();
-            params.put("name", "브라운");
-            params.put("date", "2023-08-05");
-            params.put("time", "10:00");
+            // 시간 추가
+            Map<String, String> reservationTime = new HashMap<>();
+            reservationTime.put("startAt", "10:00");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .body(params)
+                    .body(reservationTime)
+                    .when().post("/times")
+                    .then().log().all()
+                    .statusCode(201);
+
+            // 예약 추가 및 삭제
+            Map<String, Object> reservation = new HashMap<>();
+            reservation.put("name", "브라운");
+            reservation.put("date", "2023-08-05");
+            reservation.put("timeId", 1);
+
+            RestAssured.given().log().all()
+                    .contentType(ContentType.JSON)
+                    .body(reservation)
                     .when().post("/reservations")
                     .then().log().all()
                     .statusCode(201);
@@ -158,16 +181,18 @@ public class MissionStepTest {
 
         @Test
         void 예약과_시간_연결() {
-            Map<String, String> params = new HashMap<>();
-            params.put("startAt", "10:00");
+            // 시간 추가
+            Map<String, String> reservationTime = new HashMap<>();
+            reservationTime.put("startAt", "10:00");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
-                    .body(params)
+                    .body(reservationTime)
                     .when().post("/times")
                     .then().log().all()
                     .statusCode(201);
 
+            // 예약 추가
             Map<String, Object> reservation = new HashMap<>();
             reservation.put("name", "브라운");
             reservation.put("date", "2023-08-05");
