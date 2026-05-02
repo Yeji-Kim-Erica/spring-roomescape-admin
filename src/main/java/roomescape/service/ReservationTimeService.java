@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import roomescape.dao.ReservationTimeDAO;
 import roomescape.domain.ReservationTime;
+import roomescape.dto.ReservationTimeRequestDto;
 
 @Service
 public class ReservationTimeService {
@@ -14,12 +15,12 @@ public class ReservationTimeService {
         this.reservationTimeDAO = reservationTimeDAO;
     }
 
-    public ReservationTime addNewReservationTime(ReservationTime reservationTime) {
-        Long id = reservationTimeDAO.insertWithKeyHolder(reservationTime);
+    public ReservationTime addNewReservationTime(ReservationTimeRequestDto reservationTimeRequestDto) {
+        Long id = reservationTimeDAO.insertWithKeyHolder(reservationTimeRequestDto);
 
         return new ReservationTime(
                 id,
-                reservationTime.getStartAt()
+                reservationTimeRequestDto.startAt()
         );
     }
 
