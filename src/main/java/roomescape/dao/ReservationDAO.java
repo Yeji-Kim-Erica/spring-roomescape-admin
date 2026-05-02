@@ -20,7 +20,7 @@ public class ReservationDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Reservation> findAllReservations() {
+    public List<Reservation> selectAllReservations() {
         String sql = "SELECT "
                 + "    r.id as reservation_id, "
                 + "    r.name, "
@@ -44,7 +44,7 @@ public class ReservationDAO {
         );
     }
 
-    public Long insertWithKeyHolder(ReservationRequestDto reservationRequestDto) {
+    public Long insertAndReturnId(ReservationRequestDto reservationRequestDto) {
         String sql = "INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -61,8 +61,9 @@ public class ReservationDAO {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public int delete(Long id) {
+    public boolean deleteById(Long id) {
         String sql = "DELETE FROM reservation WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
+        int rowCount = jdbcTemplate.update(sql, id);
+        return rowCount > 0;
     }
 }

@@ -16,7 +16,7 @@ public class ReservationTimeService {
     }
 
     public ReservationTime addNewReservationTime(ReservationTimeRequestDto reservationTimeRequestDto) {
-        Long id = reservationTimeDAO.insertWithKeyHolder(reservationTimeRequestDto);
+        Long id = reservationTimeDAO.insertAndReturnId(reservationTimeRequestDto);
 
         return new ReservationTime(
                 id,
@@ -25,11 +25,10 @@ public class ReservationTimeService {
     }
 
     public List<ReservationTime> retrieveAllReservationTimes() {
-        return reservationTimeDAO.findAllReservationTimes();
+        return reservationTimeDAO.selectAllReservationTimes();
     }
 
     public boolean removeReservation(Long id) {
-        int rowCount = reservationTimeDAO.delete(id);
-        return rowCount > 0;
+        return reservationTimeDAO.deleteById(id);
     }
 }

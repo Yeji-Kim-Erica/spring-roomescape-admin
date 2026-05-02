@@ -3,6 +3,7 @@ package roomescape.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -19,7 +20,7 @@ public class ReservationTimeDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long insertWithKeyHolder(ReservationTimeRequestDto reservationTimeRequestDto) {
+    public Long insertAndReturnId(ReservationTimeRequestDto reservationTimeRequestDto) {
         String sql = "INSERT INTO reservation_time (start_at) VALUES (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -34,7 +35,7 @@ public class ReservationTimeDAO {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public List<ReservationTime> findAllReservationTimes() {
+    public List<ReservationTime> selectAllReservationTimes() {
         String sql = "SELECT id, start_at FROM reservation_time";
         return jdbcTemplate.query(
                 sql,
@@ -45,18 +46,20 @@ public class ReservationTimeDAO {
         );
     }
 
-    public int delete(Long id) {
+    public boolean deleteById(Long id) {
         String sql = "DELETE FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.update(sql, id);
+        int rowCount = jdbcTemplate.update(sql, id);
+        return rowCount > 0;
     }
 
-    public ReservationTime findReservationTimeById(Long id) {
+    public Optional<ReservationTime> selectReservationTimeById(Long id) {
         String sql = "SELECT id, start_at FROM reservation_time WHERE id = ?";
-        return jdbcTemplate.queryForObject(
+        List<ReservationTime> results = jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> new ReservationTime(
                         resultSet.getLong("id"),
                         resultSet.getTime("start_at").toLocalTime()
                 ), id);
+        return results.stream().findFirst();
     }
 }
